@@ -27,6 +27,7 @@ public:
 
     // [NEW] Utility function to set 4X4 matrix uniforms
     void setMat4(const std::string &name, const glm::mat4 &mat) const;
+    void setVec3(const std::string &name, float x, float y, float z) const;
 
 private:
     // Compile error checking utility
