@@ -1,9 +1,11 @@
 #version 330 core
 layout (location = 0) in vec3 aPos;
-layout (location = 1) in vec3 aNormal; // [NEW] Normal Vector
+layout (location = 1) in vec3 aNormal; // Normal Vector
+layout (location = 2) in vec2 aTexCoord; // [NEW]
 
 out vec3 Normal;
-out vec3 FragPos; // [NEW] Pixel's World coordinates
+out vec3 FragPos; // Pixel's World coordinates
+out vec2 TexCoord; // [NEW]
 
 uniform mat4 model;
 uniform mat4 view;
@@ -18,4 +20,7 @@ void main()
 
     // Should be rotate Normal Vector
     Normal = mat3(transpose(inverse(model))) * aNormal;
+
+    // [NEW]
+    TexCoord = aTexCoord;
 }
