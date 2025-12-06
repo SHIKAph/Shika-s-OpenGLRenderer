@@ -225,11 +225,18 @@ int main() {
         // ----------------------------
         lightingShader.use();
         
-        // Set light properties
-        // [Change] Set light direction for Sun light, Not Position, as Direction
-        //lightingShader.setVec3("light.position", lightPos.x, lightPos.y, lightPos.z); (for point light)
-        lightingShader.setVec3("light.direction", -0.2f, -1.0f, -0.3f); 
-        
+        // Set Spot light properties
+        // light position is camera position
+        lightingShader.setVec3("light.position", camera.Position.x, camera.Position.y, camera.Position.z);
+        // light direction is camera front
+        lightingShader.setVec3("light.direction", camera.Front.x, camera.Front.y, camera.Front.z);
+
+        // Set spotlight inner and outer cone angles (in radians)
+        // 12.5 degrees for inner cone
+        lightingShader.setFloat("light.cutOff", glm::cos(glm::radians(12.5f)));
+        // 17.5 degrees for outer cone
+        lightingShader.setFloat("light.outerCutOff", glm::cos(glm::radians(17.5f)));
+
         lightingShader.setVec3("viewPos", camera.Position.x, camera.Position.y, camera.Position.z);
 
         // Set light attenuation factors (Delete for Sun light)
@@ -237,12 +244,13 @@ int main() {
         // lightingShader.setFloat("light.linear", 0.09f);
         // lightingShader.setFloat("light.quadratic", 0.032f);
 
-        lightingShader.setVec3("light.ambient", 0.2f, 0.2f, 0.2f); // Low ambient light
-        lightingShader.setVec3("light.diffuse", 0.5f, 0.5f, 0.5f); // Moderate diffuse light
-        lightingShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f); // Bright specular light
+        // Set light colors (For more realistic lighting, darker ambient light)
+        lightingShader.setVec3("light.ambient", 0.1f, 0.1f, 0.1f); 
+        lightingShader.setVec3("light.diffuse", 0.8f, 0.8f, 0.8f); 
+        lightingShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f); 
 
         // Set material properties
-        lightingShader.setFloat("material.shineness", 0.6f * 128.0f); // value for shineness
+        lightingShader.setFloat("material.shineness", 32.0f); // value for shineness
 
         // Bind textures to corresponding texture units
         glActiveTexture(GL_TEXTURE0); // Activate Texture Unit 0

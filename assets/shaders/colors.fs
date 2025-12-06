@@ -3,21 +3,24 @@ out vec4 FragColor;
 
 // Material Structure
 struct Material {
-    sampler2D diffuse; // [NEW] For texture mapping (Diffuse Map)
-    sampler2D specular; // [NEW] For texture mapping (Specular Map)
+    sampler2D diffuse; // For texture mapping (Diffuse Map)
+    sampler2D specular; // For texture mapping (Specular Map)
     float shineness;
 };
 
 // Light Structure
 struct Light {
-    // vec3 position; (Sun light doesn't have position, but point light does)
+    vec3 position;
     vec3 direction;
+
+    float cutOff; // [NEW] For spotlight, inner cone (light 100%)
+    float outerCutOff; // outer cone (light 0%)
 
     vec3 ambient;
     vec3 diffuse;
     vec3 specular;
 
-    // float constant; (Sun light doesn't have attenuation, but point light does)
+    // float constant;  (attenuation factors - Not use now for simple codes)
     // float linear;
     // float quadratic;
 };
@@ -40,15 +43,20 @@ void main()
     vec3 ambient = light.ambient * vec3(texture(material.diffuse, TexCoord));
     // ambient *= attenuation; // apply attenuation
 
+    // [NEW] Spotlight calculation
+    vec3 lightDir = normalize(light.position - FragPos);
+
+      // theta: angle between light direction and fragment to light direction(cosine value)
+      float theta = dot(lightDir, normalize(-light.direction));
+
+      // epsilon: smooth edge for spotlight
+      float epsilon = light.cutOff - light.outerCutOff;
+
+      // intensity: smooth edge factor for spotlight
+      float intensity = clamp((theta - light.outerCutOff) / epsilon, 0.0, 1.0);
+
     // 2. Diffuse Using texture for diffuse component
     vec3 norm = normalize(Normal);
-
-    // [Important Change] Light direction calculation for Sun light
-    // vec3 lightDir = normalize(light.position - FragPos); // Direction of light origin (point light)
-    // For Sun light, light direction is constant and opposite to light's direction
-    vec3 lightDir = normalize(-light.direction);
-
-    // calculates angle of light and normal for Dot Product
     float diff = max(dot(norm, lightDir), 0.0);
     vec3 diffuse = light.diffuse * diff * vec3(texture(material.diffuse, TexCoord));
     // diffuse *= attenuation; // apply attenuation
@@ -59,6 +67,10 @@ void main()
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shineness);
     vec3 specular = light.specular * spec * vec3(texture(material.specular, TexCoord));
     // specular *= attenuation; // apply attenuation
+
+    // [NEW] if outside spotlight cone, disable diffuse and specular components
+    diffuse *= intensity;
+    specular *= intensity;
 
     // result color
     vec3 result = ambient + diffuse + specular;
