@@ -20,7 +20,7 @@ This project demonstrates the implementation of the graphics pipeline, shader ma
 - [x] **Rendering Pipeline**: Basic triangle rendering & VBO/VAO/EBO abstraction.
 - [x] **Shaders**: Shader class implementation (Vertex & Fragment).
 - [x] **Camera System**: FPS style camera movement.
-- [ ] **Lighting**: Phong lighting model implementation.
+- [x] **Lighting**: Phong lighting model implementation.
 - [ ] **Model Loading**: Mesh loading via Assimp.
 
 ---

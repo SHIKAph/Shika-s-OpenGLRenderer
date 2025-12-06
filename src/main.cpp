@@ -40,6 +40,14 @@ glm::vec3 cubePositions[] = {
     glm::vec3(-1.3f,  1.0f, -1.5f)
 };
 
+// [NEW] 4 point light positions
+glm::vec3 pointLightPositions[] = {
+    glm::vec3( 0.7f,  0.2f, 2.0f),
+    glm::vec3( 2.3f, -3.3f, -4.0f),
+    glm::vec3(-4.0f, 2.0f, -12.0f),
+    glm::vec3( 0.0f,  0.0f, -3.0f)
+};
+
 // Timing Functions (for consistent movement speed across different hardware)
 float deltaTime = 0.0f; // time between current frame and last frame
 float lastFrame = 0.0f; // time of last frame
@@ -224,33 +232,38 @@ int main() {
         // Draw the main cube 
         // ----------------------------
         lightingShader.use();
-        
-        // Set Spot light properties
-        // light position is camera position
-        lightingShader.setVec3("light.position", camera.Position.x, camera.Position.y, camera.Position.z);
-        // light direction is camera front
-        lightingShader.setVec3("light.direction", camera.Front.x, camera.Front.y, camera.Front.z);
-
-        // Set spotlight inner and outer cone angles (in radians)
-        // 12.5 degrees for inner cone
-        lightingShader.setFloat("light.cutOff", glm::cos(glm::radians(12.5f)));
-        // 17.5 degrees for outer cone
-        lightingShader.setFloat("light.outerCutOff", glm::cos(glm::radians(17.5f)));
-
         lightingShader.setVec3("viewPos", camera.Position.x, camera.Position.y, camera.Position.z);
+        lightingShader.setFloat("material.shininess", 32.0f);
 
-        // Set light attenuation factors (Delete for Sun light)
-        // lightingShader.setFloat("light.constant", 1.0f);
-        // lightingShader.setFloat("light.linear", 0.09f);
-        // lightingShader.setFloat("light.quadratic", 0.032f);
+        // 1. Directional Light (Sun Light, likes dark an blue moonlight)
+        lightingShader.setVec3("dirLight.direction", -0.2f, -1.0f, -0.3f);
+        lightingShader.setVec3("dirLight.ambient", 0.05f, 0.05f, 0.05f);
+        lightingShader.setVec3("dirLight.diffuse", 0.4f, 0.4f, 0.4f);
+        lightingShader.setVec3("dirLight.specular", 0.5f, 0.5f, 0.5f);
 
-        // Set light colors (For more realistic lighting, darker ambient light)
-        lightingShader.setVec3("light.ambient", 0.1f, 0.1f, 0.1f); 
-        lightingShader.setVec3("light.diffuse", 0.8f, 0.8f, 0.8f); 
-        lightingShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f); 
+        // 2. Point Lights (4 lights) (warm white light)
+        for(int i = 0; i < 4; i++){
+            std::string number = std::to_string(i);
+            lightingShader.setVec3("pointLights[" + number + "].position", pointLightPositions[i].x, pointLightPositions[i].y, pointLightPositions[i].z);
+            lightingShader.setVec3("pointLights[" + number + "].ambient", 0.05f, 0.05f, 0.05f);
+            lightingShader.setVec3("pointLights[" + number + "].diffuse", 0.8f, 0.8f, 0.8f);
+            lightingShader.setVec3("pointLights[" + number + "].specular", 1.0f, 1.0f, 1.0f);
+            lightingShader.setFloat("pointLights[" + number + "].constant", 1.0f);
+            lightingShader.setFloat("pointLights[" + number + "].linear", 0.09f);
+            lightingShader.setFloat("pointLights[" + number + "].quadratic", 0.032f);
+        }
 
-        // Set material properties
-        lightingShader.setFloat("material.shineness", 32.0f); // value for shineness
+        // 3. Spotlight (flashlight, very bright white light)
+        lightingShader.setVec3("spotLight.position", camera.Position.x, camera.Position.y, camera.Position.z);
+        lightingShader.setVec3("spotLight.direction", camera.Front.x, camera.Front.y, camera.Front.z);
+        lightingShader.setVec3("spotLight.ambient", 0.0f, 0.0f, 0.0f);
+        lightingShader.setVec3("spotLight.diffuse", 1.0f, 1.0, 1.0f);
+        lightingShader.setVec3("spotLight.specular", 1.0f, 1.0f, 1.0f);
+        lightingShader.setFloat("spotLight.constant", 1.0f);
+        lightingShader.setFloat("spotLight.linear", 0.09f);
+        lightingShader.setFloat("spotLight.quadratic", 0.032f);
+        lightingShader.setFloat("spotLight.cutOff", glm::cos(glm::radians(12.5f)));
+        lightingShader.setFloat("spotLight.outerCutOff", glm::cos(glm::radians(15.0f)));
 
         // Bind textures to corresponding texture units
         glActiveTexture(GL_TEXTURE0); // Activate Texture Unit 0
@@ -283,20 +296,22 @@ int main() {
         }
 
         //----------------------------
-        // Draw the light cube
+        // Draw the light cube (4 point lights)
         // ----------------------------
         lightCubeShader.use();
         lightCubeShader.setMat4("projection", projection);
         lightCubeShader.setMat4("view", view);
-
-        // Move the light cube to lightPos, scale it down
-        model = glm::mat4(1.0f);
-        model = glm::translate(model, lightPos);
-        model = glm::scale(model, glm::vec3(0.2f));
-        lightCubeShader.setMat4("model", model);
-
+        
         glBindVertexArray(lightCubeVAO);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+        for (unsigned int i = 0; i < 4; i++)
+        {
+            glm::mat4 model = glm::mat4(1.0f);
+            model = glm::translate(model, pointLightPositions[i]);
+            model = glm::scale(model, glm::vec3(0.2f)); // Make it smaller
+            lightCubeShader.setMat4("model", model);
+
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
 
         glfwSwapBuffers(window);
         glfwPollEvents();
