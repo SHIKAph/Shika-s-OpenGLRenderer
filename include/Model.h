@@ -24,7 +24,7 @@
 // Texture loading utility function
 unsigned int TextureFromFile(const char *path, const std::string &directory);
 
-class MODEL
+class Model
 {
 public:
     // Model data
@@ -34,7 +34,7 @@ public:
     bool gammaCorrection;
 
     // Constructor
-    MODEL(std::string const &path, bool gamma = false) : gammaCorrection(gamma)
+    Model(std::string const &path, bool gamma = false) : gammaCorrection(gamma)
     {
         loadModel(path);
     }
@@ -139,7 +139,7 @@ private:
 
         // 2. Specular maps
         std::vector<Texture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
-        textures.insert(textures.end(), specularMaps.begin(), specuclarMaps.end());
+        textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 
         return Mesh(vertices, indices, textures);
     }
@@ -168,7 +168,7 @@ private:
             if(!skip)
             {   // If texture hasn't been loaded already, load it
                 Texture texture;
-                texture.id = TextureFromFile(str.C_Str(), this->directory, this->gammaCorrection);
+                texture.id = TextureFromFile(str.C_Str(), this->directory);
                 texture.type = typeName;
                 texture.path = str.C_Str();
                 textures.push_back(texture);
