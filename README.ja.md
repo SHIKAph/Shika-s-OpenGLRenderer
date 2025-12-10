@@ -14,7 +14,7 @@
 - [x] **Project Setup**: Modern CMake (FetchContent) を用いたビルド環境の構築
 - [x] **Window Management**: GLFWによるウィンドウ制御とクロスプラットフォーム対応
 - [x] **OpenGL Loading**: GLADによるOpenGL関数ポインタのロード管理
-- [x] **Rendering Pipeline**: 基本図形（三角形）の描画およびバッファオブジェクト (VBO/VAO/EBO) の抽象化
+- [x] **Rendering Pipeline**: 基本図形（三角形）の描画およびバッファオブジェクト (VBO/VAO) の抽象化
 - [x] **Shaders**: シェーダクラスの実装（頂点シェーダ・フラグメントシェーダのコンパイルとリンク管理）
 - [x] **Camera System**: FPS（一人称）視点カメラの実装とビュー変換行列の制御
 - [x] **Lighting**: フォン反射モデル (Phong Reflection Model) の実装（環境光・拡散反射・鏡面反射）
@@ -64,7 +64,7 @@ cmake --build build
 
 ## 🖼 Gallery
 
-> *現在、レンダリングエンジンの初期構築フェーズにあります。 ライティング計算やモデル描画のスクリーンショットを近日中に公開予定です。*
+> *現在、レンダリングエンジンの駆動ができないため（軍内部のネット環境）、ライティング計算やモデル描画のスクリーンショットを近日中に公開予定です。*
 
 ---
 
