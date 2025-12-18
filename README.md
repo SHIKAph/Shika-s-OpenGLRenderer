@@ -50,7 +50,7 @@ This project uses **CMake** to manage dependencies automatically. You don't need
 
 ```bash
 # 1. Clone the repository
-git clone [https://github.com/SHIKAph/Shika-s-OpenGLRenderer.git](https://github.com/SHIKAph/Shika-s-OpenGLRenderer.git)
+git clone [https://github.com/SHIKA-gfx/Shika-s-OpenGLRenderer.git](https://github.com/SHIKA-gfx/Shika-s-OpenGLRenderer.git)
 cd Shika-s-OpenGLRenderer
 
 # 2. Generate build files (Dependencies will be downloaded automatically)
